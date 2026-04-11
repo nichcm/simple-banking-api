@@ -5,6 +5,7 @@ use App\Infrastructure\Container\Container;
 use App\Infrastructure\Repositories\InMemoryAccountRepository;
 use App\Application\UseCases\Reset\ResetUseCase;
 use App\Application\UseCases\Deposit\DepositUseCase;
+use App\Application\UseCases\GetBalance\GetBalanceUseCase;
 use App\Http\Controllers\BankingController;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -17,6 +18,7 @@ $container->set(BankingController::class, function () {
     return new BankingController(
         new ResetUseCase($repository),
         new DepositUseCase($repository),
+        new GetBalanceUseCase($repository),
     );
 });
 
