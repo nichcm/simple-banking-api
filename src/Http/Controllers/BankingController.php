@@ -52,6 +52,7 @@ class BankingController
             $response->getBody()->write((string) $output->balance);
             return $response->withStatus(200);
         } catch (\RuntimeException) {
+            $response->getBody()->write('0');
             return $response->withStatus(404);
         }
     }
@@ -69,6 +70,7 @@ class BankingController
                 default    => $response->withStatus(400),
             };
         } catch (\RuntimeException) {
+            $response->getBody()->write('0');
             return $response->withStatus(404);
         }
     }
