@@ -7,6 +7,8 @@ use App\Application\UseCases\Deposit\DepositUseCase;
 use App\Application\UseCases\Deposit\DepositInput;
 use App\Application\UseCases\GetBalance\GetBalanceUseCase;
 use App\Application\UseCases\GetBalance\GetBalanceInput;
+use App\Application\UseCases\Withdraw\WithdrawInput;
+use App\Application\UseCases\Withdraw\WithdrawUseCase;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -17,6 +19,7 @@ class BankingController
         private ResetUseCase    $resetUseCase,
         private DepositUseCase  $depositUseCase,
         private GetBalanceUseCase  $getBalanceUseCase,
+        private WithdrawUseCase $withdrawUseCase, 
     ) {}
 
     public function ping(Request $request, Response $response, array $args): Response
@@ -82,8 +85,15 @@ class BankingController
 
     private function handleWithdraw(array $body, Response $response): Response
     {
-        $response->getBody()->write('OK');
-        return $response->withStatus(200);
+        $output = $this->withdrawUseCase->execute(
+            new WithdrawInput($body['origin'], (float) $body['amount'])
+        );
+
+        $response->getBody()->write(json_encode([
+            'origin' => ['id' => $output->originId, 'balance' => $output->originBalance],
+        ]));
+
+        return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
     }
 
     private function handleTransfer(array $body, Response $response): Response
