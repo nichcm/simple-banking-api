@@ -8,9 +8,6 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $app = AppFactory::create();
 
-$app->get('/hello-world', function (Request $request, Response $response) {
-    $response->getBody()->write(json_encode(['message' => 'Hello, World!']));
-    return $response->withHeader('Content-Type', 'application/json');
-});
+require __DIR__ . '/../routes/index.php';
 
 $app->run();
