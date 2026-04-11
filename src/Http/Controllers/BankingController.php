@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\UseCases\Reset\ResetUseCase;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class BankingController
 {
     public function __construct(
+        private ResetUseCase    $resetUseCase,
     ) {}
 
     public function ping(Request $request, Response $response, array $args): Response
@@ -18,6 +20,7 @@ class BankingController
 
     public function reset(Request $request, Response $response, array $args): Response
     {
+        $this->resetUseCase->execute();
         $response->getBody()->write('OK');
         return $response->withStatus(200);
     }
