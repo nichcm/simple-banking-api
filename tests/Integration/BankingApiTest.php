@@ -115,11 +115,32 @@ class BankingApiTest extends TestCase
 
     // --- /event: withdraw ---
 
-    public function testWithdrawReturns200(): void
+    public function testWithdrawDecreasesAccountBalance(): void
     {
-        $response = $this->sendEvent(['type' => 'withdraw', 'origin' => '100', 'amount' => 5.0]);
+        $this->makeDeposit('100', 20.0);
 
-        $this->assertSame(200, $response->getStatusCode());
+        $response = $this->sendEvent(['type' => 'withdraw', 'origin' => '100', 'amount' => 5.0]);
+        $body     = json_decode((string) $response->getBody(), true);
+
+        $this->assertSame(201, $response->getStatusCode());
+        $this->assertSame('100', $body['origin']['id']);
+        $this->assertSame(15.0, floatval($body['origin']['balance']));
+    }
+
+    public function testWithdrawFromNonExistentAccountReturns404(): void
+    {
+        $response = $this->sendEvent(['type' => 'withdraw', 'origin' => '999', 'amount' => 5.0]);
+
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    public function testWithdrawWithInsufficientFundsReturns404(): void
+    {
+        $this->makeDeposit('100', 10.0);
+
+        $response = $this->sendEvent(['type' => 'withdraw', 'origin' => '100', 'amount' => 50.0]);
+
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     // --- /event: transfer ---
