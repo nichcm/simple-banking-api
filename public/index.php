@@ -4,6 +4,7 @@ use Slim\Factory\AppFactory;
 use App\Infrastructure\Container\Container;
 use App\Infrastructure\Repositories\InMemoryAccountRepository;
 use App\Application\UseCases\Reset\ResetUseCase;
+use App\Application\UseCases\Deposit\DepositUseCase;
 use App\Http\Controllers\BankingController;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -15,6 +16,7 @@ $container->set(BankingController::class, function () {
 
     return new BankingController(
         new ResetUseCase($repository),
+        new DepositUseCase($repository),
     );
 });
 

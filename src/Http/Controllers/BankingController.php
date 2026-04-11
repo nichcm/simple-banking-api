@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Application\UseCases\Reset\ResetUseCase;
+use App\Application\UseCases\Deposit\DepositUseCase;
+use App\Application\UseCases\Deposit\DepositInput;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -10,6 +12,7 @@ class BankingController
 {
     public function __construct(
         private ResetUseCase    $resetUseCase,
+        private DepositUseCase  $depositUseCase,
     ) {}
 
     public function ping(Request $request, Response $response, array $args): Response
@@ -50,8 +53,15 @@ class BankingController
 
     private function handleDeposit(array $body, Response $response): Response
     {
-        $response->getBody()->write('OK');
-        return $response->withStatus(200);
+        $output = $this->depositUseCase->execute(
+            new DepositInput($body['destination'], (float) $body['amount'])
+        );
+
+        $response->getBody()->write(json_encode([
+            'destination' => ['id' => $output->destinationId, 'balance' => $output->destinationBalance],
+        ]));
+
+        return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
     }
 
     private function handleWithdraw(array $body, Response $response): Response
