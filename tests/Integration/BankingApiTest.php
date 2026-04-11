@@ -55,6 +55,35 @@ class BankingApiTest extends TestCase
         $this->assertSame(50.0, floatval($body['destination']['balance']));
     }
 
+    // --- /balance ---
+
+    public function testBalanceReturnsCorrectAmountAfterDeposit(): void
+    {
+        $this->makeDeposit('100', 10.0);
+
+        $request  = (new ServerRequestFactory())->createServerRequest('GET', '/balance?account_id=100');
+        $response = $this->app->handle($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('10', (string) $response->getBody());
+    }
+
+    public function testBalanceReturnsNotFoundForNonExistentAccount(): void
+    {
+        $request  = (new ServerRequestFactory())->createServerRequest('GET', '/balance?account_id=999');
+        $response = $this->app->handle($request);
+
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    public function testBalanceWithoutAccountIdReturnsBadRequest(): void
+    {
+        $request  = (new ServerRequestFactory())->createServerRequest('GET', '/balance');
+        $response = $this->app->handle($request);
+
+        $this->assertSame(400, $response->getStatusCode());
+    }
+
     // --- /event: deposit ---
 
     public function testDepositCreatesNewAccount(): void
