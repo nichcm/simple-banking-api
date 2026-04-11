@@ -12,24 +12,20 @@ RUN apk add --no-cache \
     autoconf \
     g++ \
     make \
-    libpq-dev \
     fcgi \
-    # postgresql-dev \
-    # postgresql-libs \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
+    && pecl install xdebug apcu \
+    && docker-php-ext-enable xdebug apcu \
     && echo "xdebug.mode=coverage,develop" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && docker-php-ext-install pdo_pgsql \
-    && docker-php-ext-enable pdo_pgsql \
-    && docker-php-ext-install sockets \
-    && docker-php-ext-enable sockets \
-    # && apk del autoconf g++ make linux-headers postgresql-dev \
     && rm -rf /var/lib/apk/lists/* \
     && rm -rf /var/cache/apk/*
 
 # prepara o endpoint de healthcheck:
 RUN echo "ping.path = /ping" >> "/usr/local/etc/php-fpm.d/www.conf"
 RUN echo "ping.response = pong" >> "/usr/local/etc/php-fpm.d/www.conf"
+
+RUN echo "apc.enabled=1" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini \
+    && echo "apc.shm_size=32M" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini \
+    && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
 # como testar manualmente:
 # > docker exec -it {service-name} sh
 # SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
