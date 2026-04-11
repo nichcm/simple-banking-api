@@ -6,6 +6,7 @@ use App\Infrastructure\Repositories\InMemoryAccountRepository;
 use App\Application\UseCases\Reset\ResetUseCase;
 use App\Application\UseCases\Deposit\DepositUseCase;
 use App\Application\UseCases\GetBalance\GetBalanceUseCase;
+use App\Application\UseCases\Transfer\TransferUseCase;
 use App\Application\UseCases\Withdraw\WithdrawUseCase;
 
 use App\Http\Controllers\BankingController;
@@ -22,6 +23,7 @@ $container->set(BankingController::class, function () {
         new DepositUseCase($repository),
         new GetBalanceUseCase($repository),
         new WithdrawUseCase($repository),
+        new TransferUseCase($repository),
     );
 });
 

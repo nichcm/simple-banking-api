@@ -7,6 +7,8 @@ use App\Application\UseCases\Deposit\DepositUseCase;
 use App\Application\UseCases\Deposit\DepositInput;
 use App\Application\UseCases\GetBalance\GetBalanceUseCase;
 use App\Application\UseCases\GetBalance\GetBalanceInput;
+use App\Application\UseCases\Transfer\TransferUseCase;
+use App\Application\UseCases\Transfer\TransferInput;
 use App\Application\UseCases\Withdraw\WithdrawInput;
 use App\Application\UseCases\Withdraw\WithdrawUseCase;
 
@@ -20,6 +22,7 @@ class BankingController
         private DepositUseCase  $depositUseCase,
         private GetBalanceUseCase  $getBalanceUseCase,
         private WithdrawUseCase $withdrawUseCase, 
+        private TransferUseCase $transferUseCase,
     ) {}
 
     public function ping(Request $request, Response $response, array $args): Response
@@ -98,7 +101,15 @@ class BankingController
 
     private function handleTransfer(array $body, Response $response): Response
     {
-        $response->getBody()->write('OK');
-        return $response->withStatus(200);
+        $output = $this->transferUseCase->execute(
+            new TransferInput($body['origin'], $body['destination'], (float) $body['amount'])
+        );
+
+        $response->getBody()->write(json_encode([
+            'origin'      => ['id' => $output->originId,      'balance' => $output->originBalance],
+            'destination' => ['id' => $output->destinationId, 'balance' => $output->destinationBalance],
+        ]));
+
+        return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
     }
 }

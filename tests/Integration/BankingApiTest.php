@@ -145,11 +145,45 @@ class BankingApiTest extends TestCase
 
     // --- /event: transfer ---
 
-    public function testTransferReturns200(): void
+    public function testTransferMovesBalanceBetweenAccounts(): void
     {
-        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '100', 'destination' => '300', 'amount' => 15.0]);
+        $this->makeDeposit('100', 20.0);
 
-        $this->assertSame(200, $response->getStatusCode());
+        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '100', 'destination' => '300', 'amount' => 15.0]);
+        $body     = json_decode((string) $response->getBody(), true);
+
+        $this->assertSame(201, $response->getStatusCode());
+        $this->assertSame('100', $body['origin']['id']);
+        $this->assertSame(5.0, floatval($body['origin']['balance']));
+        $this->assertSame('300', $body['destination']['id']);
+        $this->assertSame(15.0, floatval($body['destination']['balance']));
+    }
+
+    public function testTransferCreatesDestinationAccountIfNotExists(): void
+    {
+        $this->makeDeposit('100', 30.0);
+
+        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '100', 'destination' => '999', 'amount' => 10.0]);
+        $body     = json_decode((string) $response->getBody(), true);
+
+        $this->assertSame(201, $response->getStatusCode());
+        $this->assertSame(10.0, floatval($body['destination']['balance']));
+    }
+
+    public function testTransferFromNonExistentAccountReturns404(): void
+    {
+        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '999', 'destination' => '300', 'amount' => 15.0]);
+
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    public function testTransferWithInsufficientFundsReturns404(): void
+    {
+        $this->makeDeposit('100', 5.0);
+
+        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '100', 'destination' => '300', 'amount' => 50.0]);
+
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     // --- /event: invalid type ---
