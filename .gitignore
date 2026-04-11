@@ -2,3 +2,5 @@
 .env
 vendor/
 .claude
+coverage/
+.phpunit.result.cache
