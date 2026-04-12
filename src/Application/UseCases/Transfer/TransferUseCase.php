@@ -13,10 +13,18 @@ class TransferUseCase
 
     public function execute(TransferInput $input): TransferOutput
     {
+        $this->accountRepository->beginTransaction();
+
         $origin = $this->accountRepository->findById($input->originId);
 
         if ($origin === null) {
+            $this->accountRepository->commit();
             throw new \RuntimeException('Origin account not found.');
+        }
+
+        if ($input->originId === $input->destinationId) {
+            $this->accountRepository->commit();
+            throw new \RuntimeException('Origin and destination accounts must be different.');
         }
 
         $destination = $this->accountRepository->findById($input->destinationId);
@@ -30,6 +38,8 @@ class TransferUseCase
 
         $this->accountRepository->save($origin);
         $this->accountRepository->save($destination);
+
+        $this->accountRepository->commit();
 
         return new TransferOutput(
             $origin->getId(),

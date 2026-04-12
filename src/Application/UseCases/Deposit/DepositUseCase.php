@@ -15,6 +15,8 @@ class DepositUseCase
 
     public function execute(DepositInput $input): DepositOutput
     {
+        $this->accountRepository->beginTransaction();
+
         $account = $this->accountRepository->findById($input->destinationId);
 
         if ($account === null) {
@@ -23,6 +25,8 @@ class DepositUseCase
 
         $account->deposit($input->amount);
         $this->accountRepository->save($account);
+
+        $this->accountRepository->commit();
 
         return new DepositOutput($account->getId(), $account->getBalance());
     }

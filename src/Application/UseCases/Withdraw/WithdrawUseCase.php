@@ -12,14 +12,19 @@ class WithdrawUseCase
 
     public function execute(WithdrawInput $input): WithdrawOutput
     {
+        $this->accountRepository->beginTransaction();
+
         $account = $this->accountRepository->findById($input->originId);
 
         if ($account === null) {
+            $this->accountRepository->commit();
             throw new \RuntimeException('Account not found.');
         }
 
         $account->withdraw($input->amount);
         $this->accountRepository->save($account);
+
+        $this->accountRepository->commit();
 
         return new WithdrawOutput($account->getId(), $account->getBalance());
     }
