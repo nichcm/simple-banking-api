@@ -6,6 +6,6 @@ class WithdrawInput
 {
     public function __construct(
         public readonly string $originId,
-        public readonly float  $amount
+        public readonly int  $amount
     ) {}
 }

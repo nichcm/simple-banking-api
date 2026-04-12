@@ -6,6 +6,6 @@ class DepositOutput
 {
     public function __construct(
         public readonly string $destinationId,
-        public readonly float  $destinationBalance
+        public readonly int  $destinationBalance
     ) {}
 }

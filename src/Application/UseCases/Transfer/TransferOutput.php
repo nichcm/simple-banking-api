@@ -6,8 +6,8 @@ class TransferOutput
 {
     public function __construct(
         public readonly string $originId,
-        public readonly float  $originBalance,
+        public readonly int  $originBalance,
         public readonly string $destinationId,
-        public readonly float  $destinationBalance
+        public readonly int  $destinationBalance
     ) {}
 }

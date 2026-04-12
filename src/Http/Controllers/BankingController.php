@@ -78,7 +78,7 @@ class BankingController
     private function handleDeposit(array $body, Response $response): Response
     {
         $output = $this->depositUseCase->execute(
-            new DepositInput($body['destination'], (float) $body['amount'])
+            new DepositInput($body['destination'], (int) round((float) $body['amount']))
         );
 
         $response->getBody()->write(json_encode([
@@ -91,7 +91,7 @@ class BankingController
     private function handleWithdraw(array $body, Response $response): Response
     {
         $output = $this->withdrawUseCase->execute(
-            new WithdrawInput($body['origin'], (float) $body['amount'])
+            new WithdrawInput($body['origin'], (int) round((float) $body['amount']))
         );
 
         $response->getBody()->write(json_encode([
@@ -104,7 +104,7 @@ class BankingController
     private function handleTransfer(array $body, Response $response): Response
     {
         $output = $this->transferUseCase->execute(
-            new TransferInput($body['origin'], $body['destination'], (float) $body['amount'])
+            new TransferInput($body['origin'], $body['destination'], (int) round((float) $body['amount']))
         );
 
         $response->getBody()->write(json_encode([
