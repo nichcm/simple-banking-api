@@ -44,22 +44,22 @@ class BankingApiTest extends TestCase
 
     public function testResetClearsStorageState(): void
     {
-        $this->makeDeposit('42', 100.0);
+        $this->makeDeposit('42', 100);
 
         $reset = (new ServerRequestFactory())->createServerRequest('POST', '/reset');
         $this->app->handle($reset);
 
-        $response = $this->makeDeposit('42', 50.0);
+        $response = $this->makeDeposit('42', 50);
         $body     = json_decode((string) $response->getBody(), true);
 
-        $this->assertSame(50.0, intval($body['destination']['balance']));
+        $this->assertSame(50, $body['destination']['balance']);
     }
 
     // --- /balance ---
 
     public function testBalanceReturnsCorrectAmountAfterDeposit(): void
     {
-        $this->makeDeposit('100', 10.0);
+        $this->makeDeposit('100', 10);
 
         $request  = (new ServerRequestFactory())->createServerRequest('GET', '/balance?account_id=100');
         $response = $this->app->handle($request);
@@ -88,27 +88,27 @@ class BankingApiTest extends TestCase
 
     public function testDepositCreatesNewAccount(): void
     {
-        $response = $this->makeDeposit('100', 10.0);
+        $response = $this->makeDeposit('100', 10);
         $body     = json_decode((string) $response->getBody(), true);
 
         $this->assertSame(201, $response->getStatusCode());
         $this->assertSame('100', $body['destination']['id']);
-        $this->assertSame(10.0, intval($body['destination']['balance']));
+        $this->assertSame(10, $body['destination']['balance']);
     }
 
     public function testDepositAddsBalanceToExistingAccount(): void
     {
-        $this->makeDeposit('100', 10.0);
-        $response = $this->makeDeposit('100', 10.0);
+        $this->makeDeposit('100', 10);
+        $response = $this->makeDeposit('100', 10);
         $body     = json_decode((string) $response->getBody(), true);
 
         $this->assertSame(201, $response->getStatusCode());
-        $this->assertSame(20.0, intval($body['destination']['balance']));
+        $this->assertSame(20, $body['destination']['balance']);
     }
 
     public function testDepositReturnsJsonContentType(): void
     {
-        $response = $this->makeDeposit('200', 50.0);
+        $response = $this->makeDeposit('200', 50);
 
         $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
     }
@@ -117,28 +117,28 @@ class BankingApiTest extends TestCase
 
     public function testWithdrawDecreasesAccountBalance(): void
     {
-        $this->makeDeposit('100', 20.0);
+        $this->makeDeposit('100', 20);
 
-        $response = $this->sendEvent(['type' => 'withdraw', 'origin' => '100', 'amount' => 5.0]);
+        $response = $this->sendEvent(['type' => 'withdraw', 'origin' => '100', 'amount' => 5]);
         $body     = json_decode((string) $response->getBody(), true);
 
         $this->assertSame(201, $response->getStatusCode());
         $this->assertSame('100', $body['origin']['id']);
-        $this->assertSame(15.0, intval($body['origin']['balance']));
+        $this->assertSame(15, $body['origin']['balance']);
     }
 
     public function testWithdrawFromNonExistentAccountReturns404(): void
     {
-        $response = $this->sendEvent(['type' => 'withdraw', 'origin' => '999', 'amount' => 5.0]);
+        $response = $this->sendEvent(['type' => 'withdraw', 'origin' => '999', 'amount' => 5]);
 
         $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testWithdrawWithInsufficientFundsReturns404(): void
     {
-        $this->makeDeposit('100', 10.0);
+        $this->makeDeposit('100', 10);
 
-        $response = $this->sendEvent(['type' => 'withdraw', 'origin' => '100', 'amount' => 50.0]);
+        $response = $this->sendEvent(['type' => 'withdraw', 'origin' => '100', 'amount' => 50]);
 
         $this->assertSame(404, $response->getStatusCode());
     }
@@ -147,41 +147,41 @@ class BankingApiTest extends TestCase
 
     public function testTransferMovesBalanceBetweenAccounts(): void
     {
-        $this->makeDeposit('100', 20.0);
+        $this->makeDeposit('100', 20);
 
-        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '100', 'destination' => '300', 'amount' => 15.0]);
+        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '100', 'destination' => '300', 'amount' => 15]);
         $body     = json_decode((string) $response->getBody(), true);
 
         $this->assertSame(201, $response->getStatusCode());
         $this->assertSame('100', $body['origin']['id']);
-        $this->assertSame(5.0, intval($body['origin']['balance']));
+        $this->assertSame(5, $body['origin']['balance']);
         $this->assertSame('300', $body['destination']['id']);
-        $this->assertSame(15.0, intval($body['destination']['balance']));
+        $this->assertSame(15, $body['destination']['balance']);
     }
 
     public function testTransferCreatesDestinationAccountIfNotExists(): void
     {
-        $this->makeDeposit('100', 30.0);
+        $this->makeDeposit('100', 30);
 
-        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '100', 'destination' => '999', 'amount' => 10.0]);
+        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '100', 'destination' => '999', 'amount' => 10]);
         $body     = json_decode((string) $response->getBody(), true);
 
         $this->assertSame(201, $response->getStatusCode());
-        $this->assertSame(10.0, intval($body['destination']['balance']));
+        $this->assertSame(10, $body['destination']['balance']);
     }
 
     public function testTransferFromNonExistentAccountReturns404(): void
     {
-        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '999', 'destination' => '300', 'amount' => 15.0]);
+        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '999', 'destination' => '300', 'amount' => 15]);
 
         $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testTransferWithInsufficientFundsReturns404(): void
     {
-        $this->makeDeposit('100', 5.0);
+        $this->makeDeposit('100', 5);
 
-        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '100', 'destination' => '300', 'amount' => 50.0]);
+        $response = $this->sendEvent(['type' => 'transfer', 'origin' => '100', 'destination' => '300', 'amount' => 50]);
 
         $this->assertSame(404, $response->getStatusCode());
     }
