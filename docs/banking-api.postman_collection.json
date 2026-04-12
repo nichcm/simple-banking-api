@@ -1,0 +1,163 @@
+{
+	"info": {
+		"_postman_id": "d25ca04a-4c12-4273-956a-5d12a59254f8",
+		"name": "banking-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49060332",
+		"_collection_link": "https://nicolas-eng-edu-7954887.postman.co/workspace/Nicolas's-Workspace~1d5a86b4-7d6f-4566-8086-26730ac04ba6/collection/49060332-d25ca04a-4c12-4273-956a-5d12a59254f8?action=share&source=collection_link&creator=49060332"
+	},
+	"item": [
+		{
+			"name": "reset",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/reset",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "balance",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/balance?account_id=1234",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"balance"
+					],
+					"query": [
+						{
+							"key": "account_id",
+							"value": "1234"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deposit",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"deposit\",\n    \"destination\": \"1\",\n    \"amount\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/event",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"event"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "withdraw",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"withdraw\",\n    \"origin\": \"200\",\n    \"amount\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/event",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"event"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transfer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"type\":\"transfer\", \"origin\":\"100\", \"amount\":15, \"destination\":\"300\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/event",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"event"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": ""
+		},
+		{
+			"key": "url1",
+			"value": ""
+		}
+	]
+}

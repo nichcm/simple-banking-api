@@ -7,6 +7,6 @@ class TransferInput
     public function __construct(
         public readonly string $originId,
         public readonly string $destinationId,
-        public readonly float  $amount
+        public readonly int  $amount
     ) {}
 }

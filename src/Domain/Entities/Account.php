@@ -6,9 +6,9 @@ use RuntimeException;
 
 class Account {
     private string $id;
-    private float $balance;
+    private int $balance;
 
-    public function __construct(string $id, float $balance = 0.0) {
+    public function __construct(string $id, int $balance = 0) {
         $this->id = $id;
         $this->balance = $balance;
     }
@@ -17,18 +17,18 @@ class Account {
         return $this->id;
     }
 
-    public function getBalance(): float {
+    public function getBalance(): int {
         return $this->balance;
     }
 
-    public function deposit(float $amount): void {
+    public function deposit(int $amount): void {
         if ($amount <= 0) {
             throw new InvalidArgumentException("Deposit amount must be positive.");
         }
         $this->balance += $amount;
     }
 
-    public function withdraw(float $amount): void {
+    public function withdraw(int $amount): void {
         if ($amount <= 0) {
             throw new InvalidArgumentException("Withdrawal amount must be positive.");
         }

@@ -52,7 +52,7 @@ class BankingApiTest extends TestCase
         $response = $this->makeDeposit('42', 50.0);
         $body     = json_decode((string) $response->getBody(), true);
 
-        $this->assertSame(50.0, floatval($body['destination']['balance']));
+        $this->assertSame(50.0, intval($body['destination']['balance']));
     }
 
     // --- /balance ---
@@ -93,7 +93,7 @@ class BankingApiTest extends TestCase
 
         $this->assertSame(201, $response->getStatusCode());
         $this->assertSame('100', $body['destination']['id']);
-        $this->assertSame(10.0, floatval($body['destination']['balance']));
+        $this->assertSame(10.0, intval($body['destination']['balance']));
     }
 
     public function testDepositAddsBalanceToExistingAccount(): void
@@ -103,7 +103,7 @@ class BankingApiTest extends TestCase
         $body     = json_decode((string) $response->getBody(), true);
 
         $this->assertSame(201, $response->getStatusCode());
-        $this->assertSame(20.0, floatval($body['destination']['balance']));
+        $this->assertSame(20.0, intval($body['destination']['balance']));
     }
 
     public function testDepositReturnsJsonContentType(): void
@@ -124,7 +124,7 @@ class BankingApiTest extends TestCase
 
         $this->assertSame(201, $response->getStatusCode());
         $this->assertSame('100', $body['origin']['id']);
-        $this->assertSame(15.0, floatval($body['origin']['balance']));
+        $this->assertSame(15.0, intval($body['origin']['balance']));
     }
 
     public function testWithdrawFromNonExistentAccountReturns404(): void
@@ -154,9 +154,9 @@ class BankingApiTest extends TestCase
 
         $this->assertSame(201, $response->getStatusCode());
         $this->assertSame('100', $body['origin']['id']);
-        $this->assertSame(5.0, floatval($body['origin']['balance']));
+        $this->assertSame(5.0, intval($body['origin']['balance']));
         $this->assertSame('300', $body['destination']['id']);
-        $this->assertSame(15.0, floatval($body['destination']['balance']));
+        $this->assertSame(15.0, intval($body['destination']['balance']));
     }
 
     public function testTransferCreatesDestinationAccountIfNotExists(): void
@@ -167,7 +167,7 @@ class BankingApiTest extends TestCase
         $body     = json_decode((string) $response->getBody(), true);
 
         $this->assertSame(201, $response->getStatusCode());
-        $this->assertSame(10.0, floatval($body['destination']['balance']));
+        $this->assertSame(10.0, intval($body['destination']['balance']));
     }
 
     public function testTransferFromNonExistentAccountReturns404(): void
@@ -204,7 +204,7 @@ class BankingApiTest extends TestCase
 
     // --- helpers ---
 
-    private function makeDeposit(string $destinationId, float $amount): \Psr\Http\Message\ResponseInterface
+    private function makeDeposit(string $destinationId, int $amount): \Psr\Http\Message\ResponseInterface
     {
         return $this->sendEvent([
             'type'        => 'deposit',
